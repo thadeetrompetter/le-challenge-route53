@@ -17,8 +17,24 @@ Challenge.create = function (defaults) {
   };
 };
 
-Challenge.set = function (args, domain, challenge, keyAuthorization, cb) {
-  // TODO
+function route53Payload(action, domain, value, id) {
+  return {
+    ChangeBatch: {
+      Changes: [{
+        Action: action,
+        ResourceRecordSet: {
+          Name: getChallengeDomain(domain),
+          Type: 'TXT',
+          TTL: 60,
+          ResourceRecords: [{
+            Value: `"${value}"`
+          }]
+        }
+      }]
+    },
+    HostedZoneId: id
+  };
+}
 };
 Challenge.get = function () { /* TODO */ };
 Challenge.remove = function () { /* TODO */ };
