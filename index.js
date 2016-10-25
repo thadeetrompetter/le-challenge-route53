@@ -1,15 +1,19 @@
 'use strict';
 
-const crypto = require('crypto');
 const dns = require('dns');
 const fs = require('fs');
-const base64url = require('base64-url');
 const {
   getZoneIDByName,
   route53CreatePayload,
   route53DeletePayload,
   changeResourceRecordSets
 } = require('./lib/route53');
+
+const {
+  encrypt,
+  mergeOptions
+} = require('./lib/helpers');
+
 const store = require('./lib/store');
 
 const Challenge = module.exports;
@@ -42,17 +46,6 @@ Challenge.create = function (options) {
     test: Challenge.test
   };
 };
-
-function mergeOptions(defaults, options) {
-  return Object.assign({}, defaults, options);
-}
-function encrypt(key='') {
-  return base64url.encode(
-    crypto.createHash('sha256')
-      .update(key)
-      .digest()
-    );
-}
 
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   const keyAuthDigest = encrypt(keyAuthorization);
