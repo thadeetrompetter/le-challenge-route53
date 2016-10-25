@@ -37,13 +37,12 @@ Challenge.create = function (options) {
 
   return {
     getOptions: function () {
-      return Object.assign({}, defaults) ;
+      return Object.assign({}, defaults);
     },
     set: Challenge.set,
     get: Challenge.get,
     remove: Challenge.remove,
-    loopback: Challenge.loopback,
-    test: Challenge.test
+    loopback: Challenge.loopback
   };
 };
 
@@ -67,8 +66,9 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
     })
     .catch(cb);
 };
-/* eslint-disable no-unused-vars */
+/* eslint-enable no-unused-vars */
 Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */ };
+/* eslint-disable no-unused-vars */
 Challenge.remove = function (opts, domain, token, cb) {
   store.getPayload(domain)
     .then(({id, domain, value}) => {
@@ -87,8 +87,6 @@ Challenge.loopback = function (opts, domain, token, cb) {
       cb(err);
     }
     const [[record]] = records;
-    console.log(record);
     cb(null, record);
   });
 };
-/* eslint-enable no-unused-vars */
