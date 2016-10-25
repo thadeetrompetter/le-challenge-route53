@@ -20,7 +20,7 @@ const Challenge = module.exports;
 
 const defaults = {
   debug: false,
-  // _acme-challenge.example.com TXT xxxxxxxxxxxxxxxx
+  delay: 1000 * 10,
   acmeChallengeDns: '_acme-challenge.',
   AWSConfigFile: './config.json'
 };
@@ -63,9 +63,7 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
         }));
     })
     .then(() => {
-      setTimeout(() => {
-        cb(null);
-      }, 1000 * 30); // TODO: make delay configurable and find a sane default.
+      setTimeout(cb, opts.delay, null);
     })
     .catch(cb);
 };
