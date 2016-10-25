@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('crypto');
+const dns = require('dns');
 const fs = require('fs');
 const base64url = require('base64-url');
 const {
@@ -44,10 +46,16 @@ Challenge.create = function (options) {
 function mergeOptions(defaults, options) {
   return Object.assign({}, defaults, options);
 }
+function encrypt(key='') {
+  return base64url.encode(
+    crypto.createHash('sha256')
+      .update(key)
+      .digest()
+    );
+}
 
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
-
-  const keyAuthDigest = base64url.encode(keyAuthorization);
+  const keyAuthDigest = encrypt(keyAuthorization);
   if (!token || !keyAuthorization) {
     console.warn("SANITY FAIL: missing challenge or keyAuthorization", domain, token, keyAuthorization);
   }
@@ -61,31 +69,35 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
           value: keyAuthDigest
         }));
     })
+    .then(() => {
+      setTimeout(() => {
+        cb(null);
+      }, 1000 * 30); // TODO: make delay configurable and find a sane default.
+    })
     .catch(cb);
 };
 /* eslint-disable no-unused-vars */
 Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */ };
 Challenge.remove = function (opts, domain, token, cb) {
-  // TODO:
-  // this might require something such as an id that needs to be retrieved from a database
-  // ddnsFoo.remove(creds, prefixName(domain), "TXT", token, opts, cb);
   store.getPayload(domain)
     .then(({id, domain, value}) => {
       const params = route53DeletePayload(id, domain, value);
       return changeResourceRecordSets(params);
     })
+    .then(() => {
+      cb(null);
+    })
     .catch(cb);
 };
 Challenge.loopback = function (opts, domain, token, cb) {
-  // var name = '_debug_' + token + prefixName(domain);
-
-  // test that we can actually set the domain record and that we can actually read it
-  // ddnsFoo.set(creds, name, "TXT", token, opts, function (err, result) {
-  //   dns.resolve(name, 'TXT', function (err, records) {
-  //     // now test that token is in records
-  //
-  //     ddnsFoo.remove(creds, name, "TXT", token, opts, cb);
-  //   });
-  // });
+  const challengeDomain = `${opts.acmeChallengeDns}${domain}`;
+  dns.resolveTxt(challengeDomain, (err, records) => {
+    if(err){
+      cb(err);
+    }
+    const [[record]] = records;
+    console.log(record);
+    cb(null, record);
+  });
 };
 /* eslint-enable no-unused-vars */
