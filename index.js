@@ -120,7 +120,7 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   }
   return getZoneIDByName(domain)
     .then(id => {
-      const params = route53CreatePayload(id, domain, dig);
+      const params = route53CreatePayload(id, domain, keyAuthDigest);
       return route53.changeResourceRecordSets(params)
         .promise()
         .then(() => store.setPayload(domain, {
