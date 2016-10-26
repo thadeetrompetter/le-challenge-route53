@@ -66,9 +66,9 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
     })
     .catch(cb);
 };
-/* eslint-enable no-unused-vars */
-Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */ };
 /* eslint-disable no-unused-vars */
+Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */ };
+/* eslint-enable no-unused-vars */
 Challenge.remove = function (opts, domain, token, cb) {
   store.getPayload(domain)
     .then(({id, domain, value}) => {
