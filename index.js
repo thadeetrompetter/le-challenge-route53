@@ -3,11 +3,12 @@
 const dns = require('dns');
 const fs = require('fs');
 const {
+  changeResourceRecordSets,
   getChallengeDomain,
   getZoneIDByName,
+  route53Config,
   route53CreatePayload,
   route53DeletePayload,
-  changeResourceRecordSets
 } = require('./lib/route53');
 
 const {
@@ -21,19 +22,16 @@ const Challenge = module.exports;
 
 const defaults = {
   debug: false,
-  delay: 1000 * 10,
-  acmeChallengeDns: '_acme-challenge.',
-  AWSConfigFile: './config.json'
+  delay: 2e4,
+  acmeChallengeDns: '_acme-challenge.'
 };
 
 Challenge.create = function (options) {
   const opts = mergeOptions(defaults, options);
-
   // AWS authentication is loaded from config file if its path is provided and
   // the file exists.
   if(opts.AWSConfigFile && fs.existsSync(opts.AWSConfigFile)){
-    // TODO: commented out while debugging
-    // AWS.config.loadFromPath(opts.AWSConfigFile);
+    route53Config.loadFromPath(opts.AWSConfigFile);
   }
 
   return {
