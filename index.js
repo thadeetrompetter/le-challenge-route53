@@ -55,7 +55,7 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
       const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
       const params = route53CreatePayload(id, prefixedDomain, keyAuthDigest);
       return changeResourceRecordSets(params)
-        .then(() => store.setPayload(domain, {
+        .then(() => store.set(domain, {
           id,
           domain,
           value: keyAuthDigest
@@ -70,11 +70,12 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
 Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */ };
 /* eslint-enable no-unused-vars */
 Challenge.remove = function (opts, domain, token, cb) {
-  store.getPayload(domain)
+  store.get(domain)
     .then(({id, domain, value}) => {
       const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
       const params = route53DeletePayload(id, prefixedDomain, value);
-      return changeResourceRecordSets(params);
+      return changeResourceRecordSets(params)
+        .then(() => store.remove(domain));
     })
     .then(() => {
       cb(null);
