@@ -3,6 +3,7 @@
 const dns = require('dns');
 const fs = require('fs');
 const {
+  getChallengeDomain,
   getZoneIDByName,
   route53CreatePayload,
   route53DeletePayload,
@@ -53,7 +54,8 @@ Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   }
   return getZoneIDByName(domain)
     .then(id => {
-      const params = route53CreatePayload(id, domain, keyAuthDigest);
+      const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
+      const params = route53CreatePayload(id, prefixedDomain, keyAuthDigest);
       return changeResourceRecordSets(params)
         .then(() => store.setPayload(domain, {
           id,
@@ -72,7 +74,8 @@ Challenge.get = function (opts, domain, token, cb) { /* Not to be implemented */
 Challenge.remove = function (opts, domain, token, cb) {
   store.getPayload(domain)
     .then(({id, domain, value}) => {
-      const params = route53DeletePayload(id, domain, value);
+      const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
+      const params = route53DeletePayload(id, prefixedDomain, value);
       return changeResourceRecordSets(params);
     })
     .then(() => {
