@@ -47,9 +47,6 @@ Challenge.create = function (options) {
 
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   const keyAuthDigest = encrypt(keyAuthorization);
-  if (!token || !keyAuthorization) {
-    console.warn("SANITY FAIL: missing challenge or keyAuthorization", domain, token, keyAuthorization);
-  }
   return getZoneIDByName(domain)
     .then(id => {
       const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
