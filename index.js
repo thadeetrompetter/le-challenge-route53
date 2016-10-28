@@ -4,7 +4,6 @@ const dns = require('dns');
 const fs = require('fs');
 const {
   changeResourceRecordSets,
-  getChallengeDomain,
   getZoneIDByName,
   route53Config,
   route53CreatePayload,
@@ -13,6 +12,7 @@ const {
 
 const {
   encrypt,
+  getChallengeDomain,
   mergeOptions
 } = require('./lib/helpers');
 
@@ -83,7 +83,7 @@ Challenge.remove = function (opts, domain, token, cb) {
     .catch(cb);
 };
 Challenge.loopback = function (opts, domain, token, cb) {
-  const challengeDomain = `${opts.acmeChallengeDns}${domain}`;
+  const challengeDomain = getChallengeDomain()
   dns.resolveTxt(challengeDomain, (err, records) => {
     if(err){
       cb(err);
