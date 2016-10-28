@@ -79,13 +79,3 @@ Challenge.remove = function (opts, domain, token, cb) {
     })
     .catch(cb);
 };
-Challenge.loopback = function (opts, domain, token, cb) {
-  const challengeDomain = getChallengeDomain()
-  dns.resolveTxt(challengeDomain, (err, records) => {
-    if(err){
-      cb(err);
-    }
-    const [[record]] = records;
-    cb(null, record);
-  });
-};
