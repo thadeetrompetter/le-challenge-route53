@@ -27,8 +27,8 @@ const defaults = {
 
 Challenge.create = function (options) {
   const zone = options.zone;
-  if(!zone){
-    throw new Error('le-challenge-route53 expects a hosted zone name');
+  if(typeof zone !== 'string'){
+    throw new Error('Expected `options.zone` to be of type String');
   }
   const opts = mergeOptions(defaults, Object.assign(options, {
     // TODO: le-challenge-route53 currently supports only one hosted zone,
