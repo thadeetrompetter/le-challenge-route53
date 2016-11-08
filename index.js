@@ -26,7 +26,15 @@ const defaults = {
 };
 
 Challenge.create = function (options) {
-  const opts = mergeOptions(defaults, options);
+  const zone = options.zone;
+  if(!zone){
+    throw new Error('le-challenge-route53 expects a hosted zone name');
+  }
+  const opts = mergeOptions(defaults, Object.assign(options, {
+    // TODO: le-challenge-route53 currently supports only one hosted zone,
+    // passed as an option. see https://github.com/thadeetrompetter/le-challenge-route53/issues/1
+    hostedZone: getZoneIDByName(zone)
+  }));
   // AWS authentication is loaded from config file if its path is provided and
   // the file exists.
   if(opts.AWSConfigFile && fs.existsSync(opts.AWSConfigFile)){
@@ -46,8 +54,7 @@ Challenge.create = function (options) {
 Challenge.set = function (opts, domain, token, keyAuthorization, cb) {
   const keyAuthDigest = encrypt(keyAuthorization);
   const prefixedDomain = getChallengeDomain(opts.acmeChallengeDns, domain);
-  return getZoneIDByName(domain)
-    .then(id => {
+  return opts.hostedZone.then(id => {
       const params = route53CreatePayload(id, prefixedDomain, keyAuthDigest);
       return changeResourceRecordSets(params)
         .then(() => store.set(domain, {

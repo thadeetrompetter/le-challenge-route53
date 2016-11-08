@@ -24,9 +24,16 @@ default behavior. Refer to [aws docs](http://docs.aws.amazon.com/sdk-for-javascr
 records created by this plugin. Setting this property allows you to compensate
 for lag in DNS propagation.
 
+* `zone`: **required** Name of a Route53 hosted zone where your dns resource
+records live. This is required to resolve a hosted zone ID from Route53.
+This (poorly) resolves the [issue](https://github.com/thadeetrompetter/le-challenge-route53/issues/1)
+of not being able to get certificates for more than one domain. Working on a
+better solution.
+
 ```javascript
 var leChallenge = require('le-challenge-route53').create({
   AWSConfigFile: '~/path/to/aws-config-file', // Optional alternative AWS credentials file to use.
+  zone: 'example.com' // required
   delay: 20000, // ms to wait before allowing letsencrypt to check dns record (20000 ms is the default)
   debug: false
 });
