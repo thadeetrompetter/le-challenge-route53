@@ -26,9 +26,9 @@ for lag in DNS propagation.
 
 * `zone`: **required** Name of a Route53 hosted zone where your dns resource
 records live. This is required to resolve a hosted zone ID from Route53.
-This (poorly) resolves the [issue](https://github.com/thadeetrompetter/le-challenge-route53/issues/1)
-of not being able to get certificates for more than one domain. Working on a
-better solution.
+This plugin supports certificate retrieval for domains within a single hosted
+zone. If you need certificates for domains under different hosted zones, run
+node-letsencrypt for each hosted zone.
 
 ```javascript
 var leChallenge = require('le-challenge-route53').create({
