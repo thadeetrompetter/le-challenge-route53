@@ -1,6 +1,6 @@
 {
   "name": "le-challenge-route53",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "node-letsencrypt dns challenge compatible with Amazon Route53",
   "main": "index.js",
   "scripts": {
